@@ -1,0 +1,55 @@
+name: tea-testarch-ci
+version: 1
+owner: qa
+summary: Beheer CI kwaliteitspoorten voor pytest op meerdere Python-versies.
+
+inputs:
+  workflow_file: .github/workflows/tests.yml
+  requirements_file: requirements.txt
+
+steps:
+  - id: verify-workflow-exists
+    goal: Controleer dat de testworkflow aanwezig is.
+    actions:
+      - Controleer .github/workflows/tests.yml
+      - Maak aan indien ontbrekend
+    output: workflow-ready
+
+  - id: enforce-ci-baseline
+    goal: Zorg voor betrouwbare basisconfiguratie.
+    actions:
+      - Trigger op push en pull_request
+      - Setup Python via actions/setup-python
+      - Installeer dependencies via requirements.txt
+      - Draai tests met python -m pytest -q
+    output: ci-baseline
+
+  - id: add-matrix-and-cache
+    goal: Maak CI sneller en robuuster.
+    actions:
+      - Voeg Python matrix toe (3.11 en 3.12)
+      - Voeg pip-cache toe via setup-python cache opties
+      - Zet fail-fast op false
+    output: ci-performance-and-compat
+
+  - id: enforce-coverage-gate
+    goal: Borg minimale code-dekking voor review module.
+    actions:
+      - Draai pytest met --cov=src/app/review
+      - Genereer coverage.xml artifact
+      - Faal CI als coverage onder 100% komt
+    output: ci-coverage-gate
+
+  - id: document-ci-status
+    goal: Leg vast hoe CI draait en waar op gelet wordt.
+    actions:
+      - Update docs/bmad/test-hardening-status.md
+      - Beschrijf matrix en cachegedrag
+    output: ci-status-docs
+
+quality-gates:
+  - CI workflow is geldig YAML en leesbaar
+  - Matrix draait op minimaal twee Python-versies
+  - Cache is actief voor pip afhankelijkheden
+  - Coverage voor src/app/review is minimaal 100%
+  - Lokale regressiecheck blijft groen

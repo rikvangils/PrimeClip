@@ -1,0 +1,46 @@
+name: tea-testarch-automate
+version: 1
+owner: qa
+summary: Breid testautomatisering uit voor API hardening en regressiepreventie.
+
+inputs:
+  project_root: .
+  test_folder: tests
+  api_module: src/app/review/api.py
+  test_file: tests/test_api_hardening.py
+
+steps:
+  - id: analyze-current-coverage
+    goal: Bekijk bestaande tests en bepaal ontbrekende success/failure paden.
+    actions:
+      - Lees tests/test_api_hardening.py
+      - Inventariseer endpoints in src/app/review/api.py
+      - Markeer ontbrekende validatie- en foutpaden
+    output: coverage-gaps
+
+  - id: implement-tests
+    goal: Voeg compacte, duidelijke tests toe voor ontbrekende paden.
+    actions:
+      - Gebruik monkeypatch voor service-laag afhankelijkheden
+      - Test minimaal 1 success-contract en 1 failure-pad per endpoint-cluster
+      - Houd testnamen beschrijvend en eenduidig
+    output: updated-test-suite
+
+  - id: verify-local
+    goal: Controleer lokaal of alles nog groen is.
+    actions:
+      - Voer uit: python -m pytest -q
+      - Repareer eventuele regressies
+    output: local-test-result
+
+  - id: document-status
+    goal: Werk teststatus-document bij met actuele stand.
+    actions:
+      - Update docs/bmad/test-hardening-status.md
+      - Noteer nieuwste pass/fail aantallen
+    output: updated-hardening-status
+
+quality-gates:
+  - Alle tests slagen lokaal
+  - Nieuwe tests dekken zowel success als failure paden
+  - Documentatie is bijgewerkt met actuele status

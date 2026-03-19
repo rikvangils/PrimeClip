@@ -1,0 +1,61 @@
+name: bmm-sprint-status
+version: 1
+owner: sm
+summary: Samenvatting van sprint voortgang met risicodetectie en aanbevelingen.
+
+inputs:
+  sprint_status_file: docs/bmad/sprint-status.yaml
+  story_dir: docs/bmad/
+  test_command: python -m pytest -q --cov=src/app --cov-report=term
+
+steps:
+  - id: read-sprint-status
+    goal: Lees en interpreteer het huidige sprint-status bestand.
+    actions:
+      - Lees docs/bmad/sprint-status.yaml volledig
+      - Lees geïmplementeerde story bestanden om status te verifiëren
+      - Vergelijk gerapporteerde status met werkelijke bestandsstatus
+    output: current-status
+
+  - id: run-quality-check
+    goal: Controleer de actuele teststatus.
+    actions:
+      - Draai: python -m pytest -q --cov=src/app --cov-report=term-missing
+      - Noteer: totaal tests, pass/fail, coverage percentage
+      - Vergelijk met sprint-status.yaml latest_quality_gate
+    output: quality-gate-status
+
+  - id: surface-risks
+    goal: Identificeer risico's die aandacht vereisen.
+    actions:
+      - Controleer stories In Progress > 3 dagen (mogelijke blokkade)
+      - Controleer stories met Dependencies die niet Done zijn
+      - Controleer coverage < 100% (of ingestelde drempel)
+      - Controleer mismatches tussen sprint-status.yaml en werkelijke bestanden
+      - Controleer epics met 0 Done stories maar stories In Progress downstream
+    output: risk-list
+
+  - id: summarize-progress
+    goal: Geef een bondige voortgangsrapportage.
+    actions:
+      - Tel: Done / In Progress / Ready / Draft per epic
+      - Bereken: % compleet per epic en overall
+      - Toon: huidige sprint gezondheid (groen/geel/rood) per epic
+      - Noem: meest recente deliverables (laatste Done stories)
+    output: progress-summary
+
+  - id: recommend-next-step
+    goal: Stel concreet de volgende actie voor.
+    actions:
+      - Kies next_bmad_step uit sprint-status.yaml
+      - Controleer of bijhorende story bestand gereed is (Status: Ready)
+      - Als story niet Ready: stel voor eerst create story [story-id] uit te voeren
+      - Als story Ready: stel voor dev this story [story-bestand-pad]
+    output: next-step-recommendation
+
+quality-gates:
+  - Alle sprint statussen zijn gelezen en gecontroleerd
+  - Quality gate is live gemeten (niet alleen uit YAML gelezen)
+  - Risico's zijn gedocumenteerd met ernst (Hoog/Midden/Laag)
+  - Voortgangssamenvatting bevat actuele aantallen
+  - Volgende aanbevolen actie is specifiek en uitvoerbaar

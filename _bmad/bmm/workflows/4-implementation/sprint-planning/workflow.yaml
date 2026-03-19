@@ -1,0 +1,62 @@
+name: bmm-sprint-planning
+version: 1
+owner: sm
+summary: Genereer sprint tracking op basis van epics en implementatiestatus.
+
+inputs:
+  epics_file: docs/bmad/epics-and-stories.md
+  story_dir: docs/bmad/
+  sprint_status_file: docs/bmad/sprint-status.yaml
+
+steps:
+  - id: inventory-stories
+    goal: Verzamel de volledige lijst van stories en hun huidige status.
+    actions:
+      - Lees docs/bmad/epics-and-stories.md
+      - Scan docs/bmad/story-e*.md bestanden
+      - Bepaal voor elke story: Draft / Ready / In Progress / Done
+      - Tel totaal stories per epic en per status
+    output: story-inventory
+
+  - id: assess-sprint-health
+    goal: Bepaal de voortgang per sprint/epic.
+    actions:
+      - Bereken: percentage Done stories per epic
+      - Identificeer: stories In Progress (maximaal 1-2 tegelijk)
+      - Identificeer: volgende Ready story per epic
+      - Signaleer: geblokkeerde stories (dependencies niet Done)
+    output: sprint-health
+
+  - id: generate-sprint-status
+    goal: Schrijf of update het sprint-status.yaml bestand.
+    actions:
+      - Update status (draft/active/complete) voor het project
+      - Update execution_status blok met actuele implementatie tellingen
+      - Update latest_quality_gate met meest recente testresultaten
+      - Voeg per-sprint gezondheidsoverzicht toe
+      - Stel next_bmad_step in op de volgende te implementeren story
+    output: sprint-status-updated
+
+  - id: identify-risks
+    goal: Breng risico's en blokkades in kaart.
+    actions:
+      - Lijst stories waarvan dependencies nog niet Done zijn
+      - Lijst epics met 0 Done stories maar wel In Progress stories in latere epics
+      - Signaleer als coverage gate niet meer 100% is
+      - Noteer ontbrekende story bestanden (in epics-and-stories maar geen bestand)
+    output: risk-register
+
+  - id: recommend-next-actions
+    goal: Geef concrete aanbevelingen voor de volgende sprint stap.
+    actions:
+      - Kies de hoogste prioriteit Ready story
+      - Controleer of bijhorende story bestand compleet is
+      - Stel voor: dev this story [story-bestand]
+    output: next-action-recommendation
+
+quality-gates:
+  - sprint-status.yaml is up-to-date en geldig YAML
+  - Alle story statussen zijn gecheckt
+  - Risico's zijn gedocumenteerd
+  - next_bmad_step is ingesteld op concrete volgende actie
+  - Geen blocking dependencies voor de aanbevolen next story

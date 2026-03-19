@@ -1,0 +1,62 @@
+name: tea-testarch-framework
+version: 1
+owner: qa
+summary: Initialiseer en configureer het pytest testframework voor ProjectFire.
+
+inputs:
+  project_root: .
+  requirements_file: requirements.txt
+  pytest_config: pytest.ini
+  src_dir: src/app/
+
+steps:
+  - id: verify-dependencies
+    goal: Controleer dat alle testdependencies aanwezig zijn.
+    actions:
+      - Lees requirements.txt
+      - Controleer aanwezigheid van: pytest, pytest-cov, httpx (voor FastAPI TestClient)
+      - Controleer aanwezigheid van: sqlalchemy, sqlmodel (voor in-memory DB tests)
+      - Voeg ontbrekende dependencies toe aan requirements.txt indien nodig
+    output: dependencies-verified
+
+  - id: configure-pytest
+    goal: Stel pytest.ini in met juiste configuratie.
+    actions:
+      - Controleer of pytest.ini bestaat
+      - Zorg voor aanwezigheid van: testpaths, addopts met --cov opties
+      - Stel in: filterwarnings om irrelevante warnings te onderdrukken
+      - Stel in: markers voor eventuele test categorieën
+    output: pytest-configured
+
+  - id: setup-conftest
+    goal: Maak of update tests/conftest.py met herbruikbare fixtures.
+    actions:
+      - Lees bestaande tests/conftest.py (indien aanwezig)
+      - Zorg voor db fixture (in-memory SQLite of test PostgreSQL)
+      - Zorg voor client fixture (FastAPI TestClient)
+      - Zorg voor monkeypatch helpers voor externe services (Buffer, FFmpeg)
+      - Documenteer elke fixture met een één-regel beschrijving
+    output: conftest-ready
+
+  - id: validate-framework
+    goal: Bevestig dat het framework correct werkt.
+    actions:
+      - Draai: python -m pytest -q → alle bestaande tests slagen
+      - Draai: python -m pytest --co → testinventaris wordt correct getoond
+      - Draai: python -m pytest --cov=src/app --cov-report=term → coverage rapport zichtbaar
+    output: framework-validated
+
+  - id: document-framework
+    goal: Documenteer hoe het testframework werkt voor nieuwe bijdragers.
+    actions:
+      - Update of maak docs/bmad/test-hardening-status.md
+      - Beschrijf: hoe tests draaien, wat fixtures doen, hoe coverage werkt
+      - Beschrijf: naamconventies voor testbestanden en functies
+    output: framework-documented
+
+quality-gates:
+  - Alle testdependencies in requirements.txt
+  - pytest.ini aanwezig met coverage configuratie
+  - tests/conftest.py bevat db en client fixtures
+  - Alle bestaande tests slagen na framework setup
+  - Coverage rapport wordt correct gegenereerd

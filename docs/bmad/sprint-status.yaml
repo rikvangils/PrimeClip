@@ -1,0 +1,166 @@
+project: PeanutClip AutoFlow
+status: complete
+date: 2026-03-19
+retrospective: docs/bmad/retrospective-all-sprints.md
+planning_basis:
+  - docs/bmad/epics-analysis.md
+  - docs/bmad/epics-and-stories.md
+  - docs/bmad/prd.md
+  - docs/bmad/architecture.md
+  - docs/bmad/ux-design.md
+
+principles:
+  - Build the smallest safe closed loop first
+  - Preserve rights and authenticity gates in every sprint
+  - Land UI when the related workflow becomes operational
+  - Use real post outcomes before enabling strong recommendation automation
+
+sprints:
+  - sprint_id: S1
+    name: Foundations and First Detection
+    goal: Establish trusted system boundaries and first source ingest capability
+    stories:
+      - E1-S1
+      - E1-S2
+      - E1-S3
+      - E1-S4
+      - E2-S1
+      - E2-S2
+    exit_criteria:
+      - Core schema is live and traceable
+      - Only whitelisted content can enter ingest
+      - Rights gate blocks unapproved publication paths
+      - New source uploads create ingest jobs with metadata
+    risks:
+      - External credential setup delays
+      - Incomplete source metadata mapping
+
+  - sprint_id: S2
+    name: Candidate Discovery and First Transformative Render
+    goal: Produce first reviewable transformed clips
+    stories:
+      - E2-S3
+      - E2-S4
+      - E3-S1
+      - E3-S2
+      - E3-S4
+    exit_criteria:
+      - Candidate segments are ranked and persisted
+      - Vertical clip renders exist for ranked moments
+      - Clips receive authenticity routing
+    risks:
+      - Candidate quality too noisy
+      - Render pipeline instability
+
+  - sprint_id: S3
+    name: Review and Publishing Loop
+    goal: Complete the first human-reviewed publishing workflow
+    stories:
+      - E4-S1
+      - E4-S2
+      - E4-S3
+      - E4-S4
+    exit_criteria:
+      - Operator can review clips in one screen
+      - Approved clips can be scheduled through the free-first distribution flow
+      - Scheduled and published lifecycle is visible
+    risks:
+      - Provider integration limitations
+      - Review UX creates friction
+
+  - sprint_id: S4
+    name: Performance Learning Baseline
+    goal: Measure published outcomes and establish optimization baseline
+    stories:
+      - E5-S1
+      - E5-S2
+      - E5-S4
+    exit_criteria:
+      - Performance snapshots are stored for supported sources
+      - Performance Score is computed and explainable
+      - Insights dashboard surfaces actionable winners and losers
+    risks:
+      - Metrics delay or sparsity
+      - TikTok analytics incompleteness
+
+  - sprint_id: S5
+    name: Recommendations and Controlled Experimentation
+    goal: Use measured outcomes to improve future clip settings safely
+    stories:
+      - E5-S3
+      - E6-S1
+      - E6-S2
+    exit_criteria:
+      - Recommendation engine produces evidence-backed suggestions
+      - Experiment registry tracks controlled tests
+      - Exploration budget is configurable and enforced
+    risks:
+      - False optimization from low sample sizes
+      - Operator trust in recommendations too low
+
+  - sprint_id: S6
+    name: Trend Operations and Experiment Workspace
+    goal: Mature the system into a controllable creative optimization platform
+    stories:
+      - E3-S3
+      - E6-S3
+      - E6-S4
+    exit_criteria:
+      - Pack lifecycle management is available
+      - Experiments workspace supports promote/extend/stop decisions
+      - Creative variation remains measurable and controllable
+    risks:
+      - Creative sprawl without disciplined pack governance
+      - Over-complex operator workflows
+
+current_recommendation:
+  current_sprint: S6
+  first_closed_loop_target: S4
+  rationale: >-
+    All 6 sprints are now fully complete. All 24 planned stories are implemented
+    with 252 passing tests and full coverage across the review, compliance, and
+    rendering modules. E1-S3 (rights and compliance gate) is done — the publish
+    gate now enforces rights status and fan-account disclosure checks before
+    any clip can be scheduled. The project is complete.
+
+execution_status:
+  implemented_story_docs: 24
+  planned_stories: 24
+  latest_quality_gate:
+    automated_tests: 252
+    review_coverage: 100.00
+    rendering_layers_coverage: 100.00
+    compliance_coverage: 100.00
+    gate: 100
+    evidence: docs/bmad/story-e1-s3-add-rights-and-compliance-gate.md
+  sprint_health:
+    - sprint_id: S1
+      status: complete
+      completed_story_docs:
+        - E1-S1
+        - E1-S2
+        - E1-S3
+        - E1-S4
+        - E2-S1
+        - E2-S2
+    - sprint_id: S2
+      status: complete
+    - sprint_id: S3
+      status: complete
+    - sprint_id: S4
+      status: complete
+    - sprint_id: S5
+      status: complete
+    - sprint_id: S6
+      status: complete
+      completed_story_docs:
+        - E3-S3
+        - E6-S3
+        - E6-S4
+  next_bmad_step:
+    story_id: null
+    title: Retrospective
+    reason: >-
+      All 24 stories are implemented and all 6 sprints are complete.
+      The next BMAD step is to run the retrospective workflow to capture
+      lessons learned across all epics and close the project lifecycle.

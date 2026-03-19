@@ -1,0 +1,64 @@
+name: bmm-create-story
+version: 1
+owner: pm
+summary: Maak een volledig ingevuld story-spec bestand klaar voor implementatie.
+
+inputs:
+  story_id: E[N]-S[N]
+  epic_ref: docs/bmad/epics-and-stories.md
+  prd_ref: docs/bmad/prd.md
+  architecture_ref: docs/bmad/architecture.md
+  sprint_status: docs/bmad/sprint-status.yaml
+
+steps:
+  - id: load-epic-context
+    goal: Begrijp de epic en de story die aangemaakt moet worden.
+    actions:
+      - Lees docs/bmad/epics-and-stories.md
+      - Identificeer de gevraagde story (E[N]-S[N])
+      - Lees bovenliggende epic definitie en done-criteria
+      - Controleer welke voorgaande stories al voltooid zijn
+    output: epic-context
+
+  - id: gather-technical-context
+    goal: Verzamel technische context die de story nodig heeft.
+    actions:
+      - Lees docs/bmad/architecture.md voor relevante componenten
+      - Lees src/app/ bestanden die door deze story geraakt worden
+      - Noteer database modellen, API routes, en service functies die relevant zijn
+      - Bekijk bestaande tests voor gerelateerde functionaliteit
+    output: technical-context
+
+  - id: write-story-file
+    goal: Schrijf een volledig story-spec bestand dat gereed is voor implementatie.
+    actions:
+      - Maak bestand aan: docs/bmad/story-e[N]-s[N]-[slug].md
+      - Vul in: Status (Ready), Epic referentie, beschrijving
+      - Schrijf minimum 3 specifieke, testbare acceptance criteria
+      - Voeg technische notities toe met bestandspaden en functienamen
+      - Lijst afhankelijkheden op (story IDs)
+      - Leg vast welke tests aangemaakt of uitgebreid moeten worden
+    output: story-file-created
+
+  - id: validate-story
+    goal: Controleer of de story compleet en implementeerbaar is.
+    actions:
+      - Verifieer: alle acceptance criteria zijn verifieerbaar
+      - Verifieer: technische notities verwijzen naar bestaande of te maken bestanden
+      - Verifieer: story valt binnen één epic
+      - Verifieer: story is haalbaar in ≤5 dagen
+    output: story-validated
+
+  - id: update-sprint-status
+    goal: Registreer de nieuwe story in sprint tracking.
+    actions:
+      - Voeg story toe aan docs/bmad/sprint-status.yaml (status: ready)
+      - Update planned_stories teller indien van toepassing
+    output: sprint-status-updated
+
+quality-gates:
+  - Story bestand aangemaakt op juist pad
+  - Minimaal 3 acceptance criteria aanwezig en testbaar
+  - Technische notities verwijzen naar concrete bestanden/functies
+  - Story afhankelijkheden correct gedocumenteerd
+  - Sprint status bijgewerkt

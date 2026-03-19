@@ -1,0 +1,73 @@
+name: bmm-retrospective
+version: 1
+owner: sm
+summary: Post-epic review om lessen te extraheren en succes te beoordelen.
+
+inputs:
+  completed_epic: E[N]
+  epics_file: docs/bmad/epics-and-stories.md
+  story_dir: docs/bmad/
+  sprint_status_file: docs/bmad/sprint-status.yaml
+  output_file: docs/bmad/retrospective-e[N].md
+
+steps:
+  - id: gather-epic-artifacts
+    goal: Verzamel alle deliverables van de epic.
+    actions:
+      - Lees alle docs/bmad/story-e[N]-s*.md bestanden
+      - Noteer: welke stories Done zijn, welke niet
+      - Noteer: implementatiebewijzen per story (bestanden, testcount, dekking)
+      - Controleer: zijn alle acceptance criteria behaald?
+    output: artifact-inventory
+
+  - id: assess-outcomes
+    goal: Evalueer of de epic zijn doelen heeft bereikt.
+    actions:
+      - Vergelijk Epic "Done When" criteria met werkelijke staat
+      - Meet: kwaliteitsgate (tests, coverage)
+      - Beoordeel: technische schuld of workarounds ingezet?
+      - Beoordeel: business value geleverd? (gebruiker kan nu X doen)
+    output: outcome-assessment
+
+  - id: extract-what-went-well
+    goal: Documenteer successen en goed werkende practices.
+    actions:
+      - Identificeer: technieken die goed werkten (TDD, YAML workflows, etc.)
+      - Identificeer: snelle wins en efficient afgeronde stories
+      - Noteer: positieve samenwerking of beslissingen
+      - Minimaal 3 positieve punten documenteren
+    output: went-well
+
+  - id: extract-what-to-improve
+    goal: Documenteer verbeterpunten voor volgende epic.
+    actions:
+      - Identificeer: stories die meer tijd kostten dan verwacht
+      - Identificeer: technische beslissingen die teruggedraaid zijn
+      - Noteer: ontbrekende context in story specs
+      - Noteer: testproblemen of coverage gaps
+      - Minimaal 3 verbeterpunten documenteren
+    output: improvements
+
+  - id: define-action-items
+    goal: Vertaal verbeterpunten naar concrete acties.
+    actions:
+      - Maak minimaal 2 actie-items met eigenaar en deadline
+      - Actie-items mogen zijn: workflow aanpassen, story template verbeteren,
+        architectuurbeslissing vastleggen, of technische schuld afbetalen
+      - Koppel elk actie-item aan een verbeterpunt
+    output: action-items
+
+  - id: write-retrospective-report
+    goal: Sla de retrospective op als een leesbaar document.
+    actions:
+      - Maak docs/bmad/retrospective-e[N].md aan
+      - Inclusief: epic samenvatting, outcome assessment, went-well, improvements, action items
+      - Update sprint-status.yaml retrospective sectie (indien aanwezig)
+    output: retrospective-saved
+
+quality-gates:
+  - Alle stories van de epic zijn beoordeeld
+  - Minimaal 3 positieve punten gedocumenteerd
+  - Minimaal 3 verbeterpunten gedocumenteerd
+  - Minimaal 2 concrete actie-items met eigenaar
+  - Retrospective opgeslagen in docs/bmad/

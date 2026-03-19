@@ -1,0 +1,63 @@
+name: tea-testarch-test-review
+version: 1
+owner: qa
+summary: Review testkwaliteit op basis van best practices validatie.
+
+inputs:
+  test_dir: tests/
+  src_dir: src/app/
+  coverage_threshold: 100
+
+steps:
+  - id: inventory-tests
+    goal: Maak een inventaris van alle bestaande tests.
+    actions:
+      - Lijst alle bestanden in tests/ op
+      - Tel tests per bestand
+      - Categoriseer per type (unit, API, integration, rendering, etc.)
+      - Draai: python -m pytest --co -q → zie volledige testlijst
+    output: test-inventory
+
+  - id: review-test-quality
+    goal: Beoordeel de kwaliteit van tests op best practices.
+    actions:
+      - Controleer: testnamen zijn beschrijvend (test_[scenario]_[expected])
+      - Controleer: elke test heeft één duidelijke assert
+      - Controleer: geen multiple assertions die verschillende gedragingen testen
+      - Controleer: monkeypatches zijn gericht (zo smal mogelijk)
+      - Controleer: geen magic numbers of hardcoded UUID zonder context
+      - Controleer: fixture gebruik is consistent (conftest vs lokaal)
+    output: quality-findings
+
+  - id: review-coverage-effectiveness
+    goal: Beoordeel of coverage werkelijk gedrag test.
+    actions:
+      - Draai: python -m pytest --cov=src/app --cov-report=term-missing
+      - Controleer: zijn er regels gedekt die eigenlijk niet echt getest worden? (coverage gaming)
+      - Identificeer: tests die alleen branches raken maar geen gedrag valideren
+      - Identificeer: ontbrekende failure-pad tests voor elk API endpoint
+    output: coverage-effectiveness
+
+  - id: review-maintainability
+    goal: Beoordeel hoe onderhoudbaar de tests zijn.
+    actions:
+      - Controleer: herhaling in test setup (extraheren naar fixtures?)
+      - Controleer: tests die te veel mock setup vereisen (te tightly coupled?)
+      - Controleer: tests die mislukken doordat internals wijzigen ipv gedrag
+      - Controleer: test bestand organisatie (logische groepering per module?)
+    output: maintainability-findings
+
+  - id: produce-review-report
+    goal: Schrijf een gestructureerd review rapport.
+    actions:
+      - Categoriseer findings: Kritisch / Aanbeveling / Positief
+      - Geef concrete verbeteracties per Kritisch finding
+      - Geef een overall testsuite beoordeling (Score 1-10)
+      - Noteer specifieke testnamen die verbeterd moeten worden
+    output: review-report
+
+quality-gates:
+  - Alle 4 reviewstappen zijn uitgevoerd
+  - Elke Kritisch finding heeft een concrete actie
+  - Coverage rapport is live gemeten (niet geschat)
+  - Overall beoordeling is vastgelegd

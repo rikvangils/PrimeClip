@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- BMAD Core Workflow Engine v6 -->
+<!-- ProjectFire: AI Virtual Creators Network -->
+<workflows>
+  <core-config>
+    <project-name>ProjectFire</project-name>
+    <project-type>digital-media-platform</project-type>
+    <version>1.0</version>
+    <created>2026-03-10</created>
+    <modules>bmb,bmm,cis</modules>
+  </core-config>
+
+  <workflow id="project-setup">
+    <description>Initialize ProjectFire BMAD infrastructure</description>
+    <status>active</status>
+    <steps>
+      <step id="1" name="Load Project Context">
+        <task>Review project-context.md for AI rules and project vision</task>
+        <output>Shared understanding of project goals</output>
+      </step>
+      <step id="2" name="Create Product Brief">
+        <task>Run bmad-bmm-create-product-brief workflow</task>
+        <output>product-brief.md</output>
+      </step>
+      <step id="3" name="Market Research">
+        <task>Run bmad-bmm-market-research workflow</task>
+        <output>market-research.md</output>
+      </step>
+      <step id="4" name="Domain Research">
+        <task>Run bmad-bmm-domain-research workflow</task>
+        <output>domain-research.md</output>
+      </step>
+      <step id="5" name="Create PRD">
+        <task>Run bmad-bmm-create-prd workflow</task>
+        <output>product-requirements.md</output>
+      </step>
+      <step id="6" name="Create UX Design">
+        <task>Run bmad-bmm-create-ux-design workflow</task>
+        <output>ux-design.md</output>
+      </step>
+      <step id="7" name="Create Architecture">
+        <task>Run bmad-bmm-create-architecture workflow</task>
+        <output>architecture.md</output>
+      </step>
+      <step id="8" name="Create Epics & Stories">
+        <task>Run bmad-bmm-create-epics-and-stories workflow</task>
+        <output>epics-and-stories.md</output>
+      </step>
+      <step id="9" name="Sprint Planning">
+        <task>Run bmad-bmm-sprint-planning workflow</task>
+        <output>sprint-status.yaml</output>
+      </step>
+    </steps>
+  </workflow>
+
+  <workflow id="business-modeling">
+    <description>Complete business model design for ProjectFire</description>
+    <module>bmm</module>
+    <agents>pm,architect,analyst,dev</agents>
+  </workflow>
+
+  <workflow id="market-innovation">
+    <description>Market discovery and innovation strategy</description>
+    <module>cis</module>
+    <agents>innovation-strategist,creative-problem-solver</agents>
+  </workflow>
+
+  <module id="bmm" name="Business Modeling">
+    <description>Product management, architecture, design, strategy</description>
+    <agents>
+      <agent id="pm" name="Product Manager" />
+      <agent id="architect" name="Solution Architect" />
+      <agent id="analyst" name="Business Analyst" />
+      <agent id="dev" name="Developer" />
+    </agents>
+  </module>
+
+  <module id="cis" name="Creative & Innovation Strategy">
+    <description>Creative problem solving, design thinking, innovation</description>
+    <agents>
+      <agent id="innovation" name="Innovation Strategist" />
+      <agent id="creative" name="Creative Problem Solver" />
+      <agent id="designer" name="Design Thinking Coach" />
+    </agents>
+  </module>
+
+  <module id="bmb" name="BMAD Builder">
+    <description>Build and maintain BMAD infrastructure</description>
+    <agents>
+      <agent id="module-builder" name="Module Builder" />
+      <agent id="workflow-builder" name="Workflow Builder" />
+    </agents>
+  </module>
+</workflows>

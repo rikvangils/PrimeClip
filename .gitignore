@@ -1,0 +1,58 @@
+# === Secrets – NEVER commit =============================================
+.env
+*.env
+.env.*
+!.env.example
+
+# === Python =============================================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+pip-wheel-metadata/
+*.whl
+site-packages/
+
+# === Virtual environments ===============================================
+.venv/
+venv/
+env/
+ENV/
+.virtualenv/
+
+# === Testing / coverage =================================================
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.tox/
+nosetests.xml
+test-results/
+
+# === Generated output ===================================================
+generated/
+
+# === IDE / editor =======================================================
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+Thumbs.db
+.DS_Store
+
+# === Alembic ============================================================
+# (keep migrations, ignore nothing extra here)
+
+# === Misc ===============================================================
+*.log
+*.tmp
+*.bak

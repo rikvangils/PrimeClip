@@ -1,0 +1,63 @@
+name: bmm-correct-course
+version: 1
+owner: sm
+summary: Beheer significante wijzigingen tijdens sprint uitvoering met impactanalyse.
+
+inputs:
+  change_description: "[beschrijving van de voorgestelde wijziging]"
+  affected_stories: []
+  sprint_status_file: docs/bmad/sprint-status.yaml
+
+steps:
+  - id: document-change-request
+    goal: Documenteer de voorgestelde wijziging helder.
+    actions:
+      - Beschrijf de wijziging in 2-3 zinnen
+      - Noteer de aanleiding (nieuw inzicht, technisch blokkade, business shift)
+      - Identificeer welke epics en stories door de wijziging geraakt worden
+      - Noteer de urgentie (Kritisch / Hoog / Midden)
+    output: change-request
+
+  - id: impact-analysis
+    goal: Analyseer de impact van de wijziging op lopende sprint.
+    actions:
+      - Lees betrokken story bestanden (docs/bmad/story-e*.md)
+      - Identificeer stories die moeten stoppen of aangepast worden
+      - Identificeer stories die niet geraakt worden
+      - Schat extra werk in (XS/S/M/L/XL)
+      - Identificeer risico's van wél en van niet doorvoeren
+    output: impact-assessment
+
+  - id: evaluate-options
+    goal: Evalueer minimaal 2 aanpakopties.
+    actions:
+      - Optie A: Wijziging volledig doorvoeren (scope, tijdlijn, kosten)
+      - Optie B: Gedeeltelijke wijziging (alleen kritiek deel)
+      - Optie C (optioneel): Wijziging uitstellen naar volgende epic
+      - Vergelijk opties op: impact, risico, kosten, tijdlijn
+    output: options-evaluation
+
+  - id: recommend-approach
+    goal: Kies de aanbevolen aanpak met motivering.
+    actions:
+      - Selecteer de beste optie
+      - Documenteer motivering
+      - Beschrijf concreet welke stories stoppen, wijzigen, of toegevoegd worden
+      - Beschrijf impact op sprint-status.yaml en story bestanden
+    output: recommendation
+
+  - id: implement-course-correction
+    goal: Voer de koerscorrectie door in planning documenten.
+    actions:
+      - Update betrokken story bestanden (status, acceptance criteria, technische notities)
+      - Update docs/bmad/sprint-status.yaml (next_bmad_step, health indicators)
+      - Maak nieuwe story bestanden aan indien de wijziging nieuwe stories vereist
+      - Documenteer de koerscorrectie in docs/bmad/sprint-status.yaml (notes sectie)
+    output: correction-applied
+
+quality-gates:
+  - Wijziging is volledig gedocumenteerd
+  - Impactanalyse omvat alle betrokken stories
+  - Minimaal 2 opties zijn geëvalueerd
+  - Aanbeveling heeft duidelijke motivering
+  - Alle betrokken planning documenten zijn bijgewerkt

@@ -1,0 +1,73 @@
+name: tea-testarch-nfr-assess
+version: 1
+owner: qa
+summary: Beoordeel non-functionele vereisten zoals performance, security en betrouwbaarheid.
+
+inputs:
+  nfr_ref: docs/bmad/architecture.md
+  src_dir: src/app/
+  test_dir: tests/
+
+steps:
+  - id: load-nfr-requirements
+    goal: Inventariseer alle non-functionele vereisten.
+    actions:
+      - Lees docs/bmad/architecture.md (sectie Cross-Cutting Concerns)
+      - Lees docs/bmad/prd.md (NFR sectie indien aanwezig)
+      - Stel vast: performance drempels, security eisen, betrouwbaarheidsdoelen
+      - Stel vast: observability eisen (logging, alerting)
+    output: nfr-inventory
+
+  - id: assess-performance
+    goal: Beoordeel of de codebase aan performancevereisten voldoet.
+    actions:
+      - Controleer: database queries gebruiken selectieve filters (geen SELECT *)
+      - Controleer: N+1 query patronen in service functies
+      - Controleer: API endpoints hebben geen blocking I/O in synchrone paden
+      - Controleer: rendering jobs zijn geïsoleerd van de API request cycle
+      - Noteer: welke operaties potentieel traag zijn bij schaal
+    output: performance-assessment
+
+  - id: assess-security
+    goal: Beoordeel de beveiligingsstatus van de codebase.
+    actions:
+      - Controleer: geen hardcoded credentials in src/ of tests/
+      - Controleer: alle externe URLs worden gevalideerd (geen SSRF)
+      - Controleer: SQL queries via SQLModel ORM (geen string concatenation)
+      - Controleer: foutmeldingen lekken geen interne details via API
+      - Controleer: secrets worden via environment variables geladen (config.py)
+      - Referentie: OWASP Top 10
+    output: security-assessment
+
+  - id: assess-reliability
+    goal: Beoordeel hoe betrouwbaar het systeem is bij fouten.
+    actions:
+      - Controleer: externe API calls (Buffer, YouTube) hebben foutafhandeling
+      - Controleer: rendering fouten worden gelogd en job gemarkeerd als failed
+      - Controleer: database connectie fouten worden opgevangen
+      - Controleer: geen onbehandelde uitzonderingen in kritieke paden
+      - Controleer: ingest pipeline kan hervatten na onderbreking
+    output: reliability-assessment
+
+  - id: assess-observability
+    goal: Beoordeel of het systeem voldoende zichtbaar is.
+    actions:
+      - Controleer: kritieke events worden gelogd (job created, render complete, error)
+      - Controleer: log berichten bevatten context (job_id, clip_id, etc.)
+      - Controleer: CI rapporteert testresultaten en coverage
+      - Controleer: geen log statements met gevoelige data
+    output: observability-assessment
+
+  - id: produce-nfr-report
+    goal: Sla de NFR beoordeling op als actielijst.
+    actions:
+      - Per NFR categorie: status (Voldoet / Deels / Niet)
+      - Per tekortkoming: prioriteit en aanbevolen actie
+      - Maak een actietabel met eigenaar en ernst
+    output: nfr-report
+
+quality-gates:
+  - Alle 5 NFR categorieën zijn beoordeeld
+  - Elke tekortkoming heeft een aanbevolen actie
+  - Security beoordeling dekt OWASP Top 10
+  - Rapport bevat een statustabel per categorie

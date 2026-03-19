@@ -1,0 +1,75 @@
+name: bmm-document-project
+version: 1
+owner: dev
+summary: Documenteer het brownfield ProjectFire project voor AI context en toekomstige onboarding.
+
+inputs:
+  project_root: .
+  src_dir: src/app
+  docs_dir: docs/bmad
+  output_file: docs/bmad/project-documentation.md
+
+steps:
+  - id: scan-codebase
+    goal: Maak een inventaris van alle bestaande code en modules.
+    actions:
+      - Lijst alle bestanden in src/app/ recursief
+      - Noteer module namen en korte beschrijvingen per module
+      - Identificeer entry points (api.py, main.py, etc.)
+      - Noteer alle database modellen in src/app/db/models.py
+      - Noteer alle FastAPI routes in api.py
+    output: codebase-inventory
+
+  - id: document-architecture
+    goal: Beschrijf de huidige architectuur zoals geïmplementeerd.
+    actions:
+      - Beschrijf de laagstructuur (API → Service → Models → DB)
+      - Noteer externe integrations (Buffer, FFmpeg, PostgreSQL)
+      - Beschrijf de data flow van bron naar gepubliceerde post
+      - Noteer configuration management (config.py, env vars)
+    output: architecture-docs
+
+  - id: document-data-model
+    goal: Beschrijf alle database entiteiten en relaties.
+    actions:
+      - Lees src/app/db/models.py volledig
+      - Maak entiteiten-tabel (naam, velden, relaties)
+      - Beschrijf enum types (status types, pack types, etc.)
+      - Noteer JSONB velden en hun verwachte structuur
+      - Lees alembic/versions/ voor migratie-geschiedenis
+    output: data-model-docs
+
+  - id: document-api-surface
+    goal: Documenteer alle API endpoints.
+    actions:
+      - Lees src/app/review/api.py
+      - Maak endpoint-tabel (methode, pad, beschrijving, request/response)
+      - Noteer query parameters en body schema's
+      - Noteer error response patronen
+    output: api-docs
+
+  - id: document-test-coverage
+    goal: Beschrijf de huidige teststatus.
+    actions:
+      - Draai: python -m pytest -q --cov=src/app --cov-report=term
+      - Noteer totaal tests, pass rate, coverage percentage
+      - Lijst testbestanden met hun scope (wat ze testen)
+      - Noteer CI configuratie (.github/workflows/tests.yml)
+    output: test-coverage-docs
+
+  - id: write-project-documentation
+    goal: Compileer alle documentatie in één overzichtsdocument.
+    actions:
+      - Schrijf docs/bmad/project-documentation.md
+      - Inclusief: project beschrijving, architectuur, data model, API surface, testdekking
+      - Voeg "Getting Started" sectie toe (setup, run tests, start server)
+      - Voeg "Key Technical Decisions" sectie toe
+    output: documentation-complete
+
+quality-gates:
+  - Alle src/app/ modules zijn gedocumenteerd
+  - Data model bevat alle entiteiten uit models.py
+  - API surface is volledig (alle routes gedocumenteerd)
+  - Testdekking sectie bevat live gemeten aantallen
+  - Getting Started instructies zijn correct en volledig
+  - Output opgeslagen in docs/bmad/project-documentation.md

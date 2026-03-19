@@ -1,0 +1,78 @@
+name: bmm-dev-story
+version: 1
+owner: dev
+summary: Implementeer een story volledig op basis van een ingevuld story-spec bestand.
+
+inputs:
+  story_file: docs/bmad/story-e[N]-s[N]-[slug].md
+  project_root: .
+  src_dir: src/app
+  test_dir: tests
+
+steps:
+  - id: load-story
+    goal: Lees en begrijp de volledige story spec voor implementatie begint.
+    actions:
+      - Lees het opgegeven story-bestand volledig
+      - Identificeer acceptance criteria, technische notities en afhankelijkheden
+      - Controleer of afhankelijke stories al geïmplementeerd zijn
+      - Markeer story als In Progress
+    output: story-context
+
+  - id: explore-codebase
+    goal: Begrijp de bestaande code die deze story raakt.
+    actions:
+      - Lees relevante src/app modules (service, api, models, etc.)
+      - Bekijk bestaande tests in tests/ die overlappen
+      - Noteer welke functies/klassen aangepast of aangemaakt moeten worden
+      - Controleer database modellen in src/app/db/models.py
+    output: implementation-map
+
+  - id: implement-logic
+    goal: Implementeer de business logic voor deze story.
+    actions:
+      - Schrijf of wijzig service-laag functies in src/app/
+      - Voeg database model wijzigingen toe indien nodig (src/app/db/models.py)
+      - Maak Alembic migratie aan indien schema wijzigt
+      - Houd implementatie gericht — alleen wat de acceptance criteria vereisen
+    output: implementation-complete
+
+  - id: implement-api
+    goal: Voeg API endpoints toe of wijzig bestaande endpoints.
+    actions:
+      - Voeg routes toe aan src/app/review/api.py of relevant api bestand
+      - Zorg dat request/response modellen gedocumenteerd zijn
+      - Valideer HTTP status codes (200, 404, 422, 500)
+    output: api-complete
+
+  - id: write-tests
+    goal: Schijf tests die alle acceptance criteria afdekken.
+    actions:
+      - Schrijf unit tests voor nieuwe service/logic functies
+      - Schrijf API integration tests via TestClient + monkeypatch
+      - Zorg voor zowel success als failure paden per endpoint
+      - Draai: python -m pytest tests/ -q --cov=src/app --cov-report=term-missing
+    output: tests-passing
+
+  - id: verify-coverage
+    goal: Bevestig dat dekking op 100% blijft na implementatie.
+    actions:
+      - Controleer coverage rapport op nieuwe ontdekte regels
+      - Voeg gerichte tests toe voor ontbrekende paden
+      - Draai volledige testsuite: python -m pytest -q
+    output: coverage-verified
+
+  - id: update-story
+    goal: Markeer story als Done en documenteer wat geleverd is.
+    actions:
+      - Wijzig Status in story-bestand naar Done
+      - Voeg "Delivered" sectie toe met implementatiebewijzen (bestanden, tests, dekking)
+      - Update docs/bmad/sprint-status.yaml indien nodig
+    output: story-done
+
+quality-gates:
+  - Alle acceptance criteria uit de story zijn geïmplementeerd
+  - Alle nieuwe en bestaande tests slagen
+  - Code coverage blijft op 100% (of de ingestelde drempel)
+  - Geen onbehandelde uitzonderingen of bare except blokken
+  - Story bestand bijgewerkt naar Done

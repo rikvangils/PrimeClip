@@ -1,0 +1,53 @@
+name: tea-testarch-atdd
+version: 1
+owner: qa
+summary: Genereer falende acceptatietests via een TDD-cyclus vóór implementatie begint.
+
+inputs:
+  story_file: docs/bmad/story-e[N]-s[N]-[slug].md
+  test_dir: tests/
+  src_dir: src/app/
+
+steps:
+  - id: read-acceptance-criteria
+    goal: Extraheer alle acceptance criteria uit de story spec.
+    actions:
+      - Lees het opgegeven story-bestand
+      - Lijst alle acceptance criteria op (minimaal 3)
+      - Vertaal elk criterium naar een testscenario (Given/When/Then)
+      - Identificeer de te testen eenheden (API endpoint, service functie, logica)
+    output: test-scenarios
+
+  - id: write-failing-tests
+    goal: Schrijf tests die falen omdat de implementatie nog niet bestaat.
+    actions:
+      - Maak of open het juiste testbestand in tests/
+      - Schrijf één test per acceptance criterium
+      - Gebruik beschrijvende testnamen (test_[scenario]_[expected_outcome])
+      - Gebruik monkeypatch voor externe afhankelijkheden
+      - Zorg dat elke test een duidelijke assert heeft
+      - Draai: python -m pytest tests/[bestand] -q → bevestig dat tests FALEN
+    output: failing-tests
+
+  - id: verify-test-failures
+    goal: Bevestig dat tests falen om de juiste redenen.
+    actions:
+      - Controleer foutmeldingen: falen tests door ontbrekende implementatie?
+      - Falen tests NIET door import fouten of syntax fouten
+      - Controleer dat assertions logisch zijn (wat wordt er echt gecontroleerd?)
+    output: failure-verification
+
+  - id: hand-off-to-dev
+    goal: Lever testbestand op aan implementatiefase.
+    actions:
+      - Documenteer welke tests er zijn in het story-bestand
+      - Noteer: "Tests aangemaakt, implementatie vereist om groen te worden"
+      - Bestand is klaar voor dev-story workflow
+    output: atdd-handoff
+
+quality-gates:
+  - Één test per acceptance criterium (minimaal 3 tests)
+  - Alle tests falen momenteel (rode fase)
+  - Geen falen door syntax of import fouten — alleen door ontbrekende implementatie
+  - Testnamen zijn beschrijvend en begrijpelijk
+  - Testbestand is aangemaakt in tests/ directory

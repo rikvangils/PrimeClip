@@ -1,0 +1,62 @@
+name: tea-testarch-test-design
+version: 1
+owner: qa
+summary: Maak systeem- of epic-niveau testplannen voor ProjectFire.
+
+inputs:
+  scope: epic  # epic | system | module
+  target: E[N]  # epic ID, module naam, of 'all'
+  epics_file: docs/bmad/epics-and-stories.md
+  architecture_ref: docs/bmad/architecture.md
+
+steps:
+  - id: define-test-scope
+    goal: Bepaal wat precies getest moet worden en welke aanpak.
+    actions:
+      - Lees epics-and-stories.md voor de stories in scope
+      - Lees architecture.md voor componenten en integrations
+      - Categoriseer te testen gedrag per laag (unit / integration / e2e)
+      - Bepaal welke risico's het hoogste testprioritiet verdienen
+    output: test-scope
+
+  - id: identify-test-types
+    goal: Bepaal per component welk type test past.
+    actions:
+      - Unit tests: puur logische functies (scoring, ranking, pack selectie)
+      - Integration tests: service + database interactie
+      - API tests: FastAPI endpoints via TestClient
+      - E2E tests (optioneel): volledige pijplijn van ingest tot publicatie
+      - Noteer welke externe systemen gemocked worden (Buffer, FFmpeg, YouTube)
+    output: test-type-map
+
+  - id: design-test-scenarios
+    goal: Ontwerp specifieke testscenario's per component.
+    actions:
+      - Per endpoint: success pad, missing resource (404), validation error (422), service failure (500)
+      - Per service functie: happy path, edge cases (lege lijst, None waarden), error condities
+      - Per model: validatie constraints, enum waarden, JSONB structuur
+      - Schrijf scenario's als: test_[component]_[scenario]_[expected]
+    output: test-scenarios
+
+  - id: define-coverage-targets
+    goal: Stel dekkingsdoelen in per module.
+    actions:
+      - src/app/review/: 100% (huidig niveau bewaren)
+      - src/app/rendering/: 100% (inclusief FFmpeg error paden)
+      - src/app/db/: 90% min (model validaties gedekt)
+      - Overall: 100% (CI gate --cov-fail-under=100)
+    output: coverage-targets
+
+  - id: write-test-plan
+    goal: Sla het testplan op als document.
+    actions:
+      - Maak docs/bmad/test-plan-[scope]-[target].md
+      - Inclusief: scope definitie, test type matrix, scenario lijst, dekkingsdoelen
+      - Noteer: welke testbestanden de scenario's implementeren
+    output: test-plan-saved
+
+quality-gates:
+  - Alle 4 test types zijn overwogen per component
+  - Minimaal 3 scenario's per API endpoint cluster
+  - Dekkingsdoelen zijn per module gedefinieerd
+  - Testplan opgeslagen in docs/bmad/

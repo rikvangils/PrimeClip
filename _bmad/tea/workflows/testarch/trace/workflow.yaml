@@ -1,0 +1,63 @@
+name: tea-testarch-trace
+version: 1
+owner: qa
+summary: Genereer een traceerbaarheidsmatrix en beslis over kwaliteitspoorten.
+
+inputs:
+  epics_file: docs/bmad/epics-and-stories.md
+  story_dir: docs/bmad/
+  test_dir: tests/
+  output_file: docs/bmad/traceability-matrix.md
+
+steps:
+  - id: collect-requirements
+    goal: Inventariseer alle acceptance criteria uit story bestanden.
+    actions:
+      - Scan alle docs/bmad/story-e*.md bestanden
+      - Extraheer story IDs en hun acceptance criteria
+      - Noteer welke stories Done / In Progress / Ready zijn
+      - Maak een platte lijst van alle criteria met story-koppeling
+    output: requirements-list
+
+  - id: collect-tests
+    goal: Inventariseer alle tests en hun beoogde dekking.
+    actions:
+      - Draai: python -m pytest --co -q → volledige testnaamlijst
+      - Koppel elke test aan een story ID (op basis van testnaam of commentaar)
+      - Identificeer tests zonder duidelijke story-koppeling
+      - Identificeer acceptance criteria zonder test
+    output: test-inventory
+
+  - id: build-traceability-matrix
+    goal: Bouw de matrix die criteria koppelt aan tests.
+    actions:
+      - Maak tabel: Story | Acceptance Criterion | Test Name | Status
+      - Markeer: gedekte criteria (groen), niet-gedekte criteria (rood)
+      - Markeer: weesstests (test maar geen criterion)
+      - Bereken: dekking% per epic en overall
+    output: traceability-matrix
+
+  - id: evaluate-quality-gate
+    goal: Beslis of de kwaliteitspoort gehaald wordt.
+    actions:
+      - Draai: python -m pytest -q --cov=src/app --cov-report=term
+      - Controleer: coverage ≥ 100% (CI drempel)
+      - Controleer: alle Must-priority criteria hebben tests
+      - Controleer: geen falende tests
+      - Geef: Go / No-Go voor release of epic afsluiting
+    output: quality-gate-decision
+
+  - id: save-matrix
+    goal: Sla de matrix op als artefact.
+    actions:
+      - Schrijf docs/bmad/traceability-matrix.md
+      - Inclusief: matrix tabel, dekkingsstatistieken, kwaliteitspoort beslissing
+      - Noteer datum van meting
+    output: matrix-saved
+
+quality-gates:
+  - Alle Done story criteria zijn in de matrix opgenomen
+  - Matrix is opgeslagen in docs/bmad/
+  - Kwaliteitspoort oordeel is gedocumenteerd (Go/No-Go)
+  - Dekkingspercentage is live gemeten
+  - Niet-gedekte Must-criteria zijn gemarkeerd als blocking

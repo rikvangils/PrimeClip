@@ -1,0 +1,73 @@
+name: bmm-code-review
+version: 1
+owner: dev
+summary: Voer een adversariële code review uit op gewijzigde bestanden om specifieke issues te vinden.
+
+inputs:
+  target_files: []
+  test_dir: tests/
+  src_dir: src/app/
+
+steps:
+  - id: identify-review-scope
+    goal: Bepaal welke bestanden gereviewd worden.
+    actions:
+      - Lees de opgegeven target_files (of gebruik git diff voor recent gewijzigde bestanden)
+      - Lees bijhorende testbestanden
+      - Noteer kritieke paden: service layer, API endpoints, database models
+    output: review-scope
+
+  - id: security-review
+    goal: Zoek security kwetsbaarheden (OWASP Top 10 focus).
+    actions:
+      - Controleer op SQL injection risico's (parametrized queries?)
+      - Controleer op onbehandelde gebruikersinvoer (XSS, injection)
+      - Controleer op hardcoded credentials of secrets
+      - Controleer op open API endpoints (ontbrekende auth)
+      - Controleer op SSRF risico's (externe URL's niet gevalideerd)
+      - Controleer op blootgestelde interne foutmeldingen in API responses
+    output: security-findings
+
+  - id: logic-review
+    goal: Zoek logische fouten en edge cases.
+    actions:
+      - Controleer op off-by-one fouten in rankings en slicing
+      - Controleer op None/null handling gaps
+      - Controleer op race conditions in async/parallel operaties
+      - Controleer op ontbrekende validatie bij externe data (snapshots, webhooks)
+      - Controleer op fout-tolerantie bij externe API calls (Buffer, ingest)
+    output: logic-findings
+
+  - id: quality-review
+    goal: Beoordeel code kwaliteit en onderhoudbaarheid.
+    actions:
+      - Controleer op te complexe functies (>20 regels core logic)
+      - Controleer op herhaling die refactoring vereist (DRY violations)
+      - Controleer op onduidelijke variabelenamen
+      - Controleer of tests werkelijk testen wat ze claimen
+      - Controleer op bare except blokken of brede exception handling
+    output: quality-findings
+
+  - id: test-review
+    goal: Beoordeel de kwaliteit van de bijhorende tests.
+    actions:
+      - Controleer: elke service methode heeft ≥1 unit test
+      - Controleer: elke API endpoint heeft success en failure test
+      - Controleer: monkeypatches zijn gericht (niet te breed)
+      - Controleer: assert statements zijn specifiek (niet alleen assertTrue)
+      - Controleer: coverage is 100% of afwijking gemotiveerd
+    output: test-review-findings
+
+  - id: produce-review-report
+    goal: Produceer een gestructureerd reviewrapport.
+    actions:
+      - Categoriseer alle findings: Critical / Major / Minor / Suggestion
+      - Geef voor elk Critical en Major finding een concrete fix
+      - Geef een overall beoordeling: Approved / Approved with comments / Changes required
+    output: review-report
+
+quality-gates:
+  - Alle vier reviewcategorieën zijn uitgevoerd
+  - Elk Critical finding heeft een concrete fix-suggestie
+  - Overall beoordeling is vastgesteld
+  - Geen Critical findings overblijven ongeadresseerd
