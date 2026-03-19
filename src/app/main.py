@@ -1,10 +1,12 @@
 from fastapi import FastAPI, HTTPException
 
 from app.config import get_settings
+from app.manual_queue.api import router as manual_queue_router
 from app.review.api import router as review_router
 
 app = FastAPI(title="PeanutClip AutoFlow API", version="0.1.0")
 app.include_router(review_router)
+app.include_router(manual_queue_router)
 
 
 @app.get("/health", tags=["system"])

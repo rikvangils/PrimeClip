@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -13,6 +14,13 @@ from app.integrations.buffer_client import BufferApiError, BufferClient
 from app.integrations.tiktok_client import TikTokApiError, TikTokClient
 from app.integrations.tiktok_oauth import TikTokOAuthError, get_tiktok_access_token, refresh_tiktok_access_token
 from app.review.compliance import assert_clip_compliant
+
+
+def _derive_caption_parts(caption: str) -> tuple[str, str, list[str]]:
+    hashtags = re.findall(r"#\w+", caption)
+    description = re.sub(r"#\w+", "", caption).strip()
+    title = (description or caption or "Untitled clip")[:80].strip() or "Untitled clip"
+    return title, description, hashtags
 
 
 def _resolve_buffer_profile_id(platform: Platform) -> str:
@@ -44,12 +52,16 @@ def _create_manual_export(publication: PublicationJob, clip: RenderedClip, capti
     export_dir = Path(settings.manual_publish_export_dir)
     export_dir.mkdir(parents=True, exist_ok=True)
     export_path = export_dir / f"{publication.id}.json"
+    title, description, hashtags = _derive_caption_parts(caption)
     export_payload = {
         "publication_job_id": str(publication.id),
         "rendered_clip_id": str(clip.id),
         "platform": publication.platform.value,
         "scheduled_at": publication.scheduled_at.isoformat() if publication.scheduled_at else None,
         "caption": caption,
+        "title": title,
+        "description": description,
+        "hashtags": hashtags,
         "render_path": clip.render_path,
         "distribution_provider": publication.distribution_provider.value,
     }

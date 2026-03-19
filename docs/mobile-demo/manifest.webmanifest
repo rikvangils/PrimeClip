@@ -1,0 +1,16 @@
+{
+  "name": "PeanutClip Mobile Demo",
+  "short_name": "PeanutClip",
+  "description": "Visual demo app voor PeanutClip",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#f6f9fc",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ]
+}

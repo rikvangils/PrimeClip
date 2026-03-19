@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>PeanutClip Mobile Demo</title>
+    <meta name="theme-color" content="#f6f9fc" />
+    <meta name="description" content="PeanutClip mobiele concept demo" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="phone-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="logo-dot"></span>
+          <div>
+            <p class="brand-title">PeanutClip</p>
+            <p class="brand-sub">Mobile concept</p>
+          </div>
+        </div>
+        <button class="avatar" aria-label="Profile">RV</button>
+      </header>
+
+      <main class="screen">
+        <section class="week-strip" aria-label="Planning week">
+          <button class="week-chip active">Vandaag</button>
+          <button class="week-chip">Morgen</button>
+          <button class="week-chip">Vr</button>
+          <button class="week-chip">Za</button>
+          <button class="week-chip">Zo</button>
+        </section>
+
+        <section class="hero-card" id="heroCard">
+          <p class="hero-label">Volgende post</p>
+          <h1 id="heroTitle">Fit snack in 20 sec</h1>
+          <p id="heroMeta" class="hero-meta">TikTok · 19:30 · Ready to post</p>
+          <div class="hero-preview" id="heroPreview"></div>
+          <div class="hero-actions">
+            <button class="btn btn-secondary">Open concept</button>
+            <button class="btn btn-primary">Post now</button>
+          </div>
+        </section>
+
+        <section class="list-header">
+          <h2>Clip queue</h2>
+          <button class="ghost-btn">See all</button>
+        </section>
+
+        <section id="clipList" class="clip-list" aria-label="Voorbeeld clips"></section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Hoofdmenu">
+        <button class="nav-item active">
+          <span>Home</span>
+        </button>
+        <button class="nav-item">
+          <span>Queue</span>
+        </button>
+        <button class="nav-item">
+          <span>Analytics</span>
+        </button>
+        <button class="nav-item">
+          <span>Settings</span>
+        </button>
+      </nav>
+
+      <button class="fab" aria-label="Nieuwe clip">+</button>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

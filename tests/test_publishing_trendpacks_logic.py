@@ -76,12 +76,16 @@ def test_create_manual_export_writes_expected_payload(tmp_path, monkeypatch) -> 
     )
     clip = SimpleNamespace(id="clip-100", render_path="render/output.mp4")
 
-    export_path = _create_manual_export(publication=publication, clip=clip, caption="hello world")
+    export_path = _create_manual_export(publication=publication, clip=clip, caption="hello world #test")
 
     assert Path(export_path).exists()
     content = Path(export_path).read_text(encoding="utf-8")
     assert '"publication_job_id": "pub-100"' in content
     assert '"platform": "instagram"' in content
+    assert '"title": "hello world"' in content
+    assert '"description": "hello world"' in content
+    assert '"hashtags": [' in content
+
 
 
 def test_schedule_clip_for_distribution_manual_success(tmp_path, monkeypatch) -> None:
